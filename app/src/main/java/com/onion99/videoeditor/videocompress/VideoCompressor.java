@@ -266,9 +266,11 @@ public class VideoCompressor extends AppCompatActivity {
         });
     }
 
+    // ------------------------------------------------------------------------
+    // 视频压缩,这里通过改码率实现压缩
+    // ------------------------------------------------------------------------
     public void executeCompressCommand() {
         String[] strArr;
-        String[] strArr2 = new String[0];
         String format = new SimpleDateFormat("_HHmmss", Locale.US).format(new Date());
         StringBuilder sb = new StringBuilder();
         sb.append(Environment.getExternalStorageDirectory().getAbsoluteFile());
@@ -302,6 +304,23 @@ public class VideoCompressor extends AppCompatActivity {
             StringBuilder sb4 = new StringBuilder();
             sb4.append("");
             sb4.append(this.seekduration);
+            // 官网 https://www.ffmpeg.org/ffmpeg.html ，中文wiki https://zh.wikipedia.org/wiki/FFmpeg#%E8%81%B2%E9%9F%B3%E5%8F%83%E6%95%B8
+            // -ss 为指定视频剪切开头的起始时间
+            // -y 表示无需询问,直接覆盖输出文件
+            // -i 输入文件,表示我要输入什么文件给ffmpeg ， Todo：一般我们用ffmpeg是以“输入→处理→输出”的流程来理解，来写命令行
+            // -t duration，持续时间。通过“-t”参数来设定我们对音视频等媒体文件的编辑处理要持续多长时间
+            // -to，stop，截止时间。通过“-to”参数来设定对媒体文件的编辑处理到什么时间点结束。需要这个用法的话，“-to”一定要写在“-i”前面！！否则就和“-t“一样是描述持续时间的了。
+            //      “-ss”、“-t”或“-to”来进行简单剪辑。
+            //      “-ss” 与 “-t” 这样是设定好起点和持续时间，“-t”所记录的时间就是最后输出文件的时长。
+            //      “-ss” 与 “-to” 是设定好起点与终点，而不用想持续时间是多长
+            // -s ——设置画面的宽与高
+            // -r ——设置帧率值，默认为25
+            // --vcodec 指定视频解码器  和-c:v 是等价的
+            // -b:a 设定音频比特率 ,这里48khz， 详情看这 https://www.zhihu.com/question/20035259
+            // -b:v 设定视频比特率 ,这里2.1Gbps ,详情看这  https://blog.csdn.net/qq_41176800/article/details/122738638?ops_request_misc=&request_id=&biz_id=102&utm_term=%E7%A0%81%E7%8E%87&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-2-122738638.nonecase&spm=1018.2226.3001.4187
+            // 码流、码率、采样率、比特率、帧速率、分辨率、高清视频的概念: https://developer.aliyun.com/article/311918?spm=a2c6h.17698244.wenzhang.1.7d0d6cf5IbBrgL
+            // -ac 设置声音的通道数目,一般双通道
+            // -ar 设置采样率  这里22.05khz：广播使用频率。
             strArr = new String[]{"-ss", sb3.toString(), "-y", "-i", videoPath, "-t", sb4.toString(), "-s", ssad, "-r", "25", "-vcodec", "mpeg4", "-b:v", "1200k", "-b:a", "48000", "-ac", "2", "-ar", "22050", this.y};
         } else if (this.quality == 2) {
             StringBuilder sb5 = new StringBuilder();
@@ -428,6 +447,7 @@ public class VideoCompressor extends AppCompatActivity {
                 VideoCompressor.this.w.seekTo(VideoCompressor.this.mintime);
             }
         });
+        // 获取视频宽高
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(videoPath);
         width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));

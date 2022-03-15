@@ -58,7 +58,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videocutter(View view) {
                 Helper.ModuleId = 1;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -66,7 +66,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videocompress(View view) {
                 Helper.ModuleId = 2;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -74,7 +74,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videotomp3(View view) {
                 Helper.ModuleId = 3;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyMusicActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -82,7 +82,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void audiovideomixer(View view) {
                 Helper.ModuleId = 4;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -90,7 +90,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videomute(View view) {
                 Helper.ModuleId = 5;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -98,7 +98,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videojoin(View view) {
                 Helper.ModuleId = 6;
                 Intent intent = new Intent(StartActivity.this, com.onion99.videoeditor.videojoiner.ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -106,7 +106,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videotoimg(View view) {
                 Helper.ModuleId = 7;
                 Intent intent = new Intent(StartActivity.this, com.onion99.videoeditor.videotogif.ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -114,7 +114,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videoformatchange(View view) {
                 Helper.ModuleId = 8;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -122,7 +122,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void fastmotion(View view) {
                 Helper.ModuleId = 9;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -130,7 +130,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void slowmotion(View view) {
                 Helper.ModuleId = 10;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -138,7 +138,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videocrop(View view) {
                 Helper.ModuleId = 11;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -146,7 +146,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videotogif(View view) {
                 Helper.ModuleId = 12;
                 Intent intent = new Intent(StartActivity.this, com.onion99.videoeditor.videotogif.ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -154,7 +154,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videorotate(View view) {
                 Helper.ModuleId = 13;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -162,7 +162,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videomirror(View view) {
                 Helper.ModuleId = 14;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -170,7 +170,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videosplit(View view) {
                 Helper.ModuleId = 15;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -178,7 +178,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videoreverse(View view) {
                 Helper.ModuleId = 16;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -186,7 +186,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videocollage(View view) {
                 Helper.ModuleId = 17;
                 Intent intent = new Intent(StartActivity.this, ListCollageAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -194,7 +194,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void audiocompress(View view) {
                 Helper.ModuleId = 18;
                 Intent intent = new Intent(StartActivity.this, ListMusicAndMyMusicActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -202,7 +202,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void audiojoiner(View view) {
                 Helper.ModuleId = 19;
                 Intent intent = new Intent(StartActivity.this, ListMusicAndMyMusicActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -210,7 +210,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void audiocutter(View view) {
                 Helper.ModuleId = 20;
                 Intent intent = new Intent(StartActivity.this, ListMusicAndMyMusicActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -218,7 +218,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void phototovideo(View view) {
                 Helper.ModuleId = 21;
                 Intent intent = new Intent(StartActivity.this, SelectImageAndMyVideoActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }
@@ -226,7 +226,7 @@ public class StartActivity extends AppCompatActivity implements AppBarLayout.OnO
     public void videowatermark(View view) {
                 Helper.ModuleId = 22;
                 Intent intent = new Intent(StartActivity.this, ListVideoAndMyAlbumActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 finish();
     }

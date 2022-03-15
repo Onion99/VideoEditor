@@ -81,7 +81,7 @@ public class MyVideoAdapter extends BaseAdapter {
         view.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View view) {
                 Intent intent = new Intent(MyVideoAdapter.this.e, VideoPlayer.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("song", ((VideoData) MyVideoAdapter.this.c.get(i)).videoPath);
                 MyVideoAdapter.this.e.startActivity(intent);
             }

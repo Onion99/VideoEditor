@@ -332,7 +332,7 @@ public class SelectionListActivity extends AppCompatActivity {
         super.onBackPressed();
         d();
         Intent intent = new Intent(getApplicationContext(), HomeTab.class);
-        intent.addFlags(67108864);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -386,7 +386,7 @@ public class SelectionListActivity extends AppCompatActivity {
    @Override public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == 16908332) {
             Intent intent = new Intent(this, StartActivity.class);
-            intent.setFlags(67108864);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
             return k;

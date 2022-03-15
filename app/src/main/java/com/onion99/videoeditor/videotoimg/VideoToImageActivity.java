@@ -343,7 +343,7 @@ public class VideoToImageActivity extends AppCompatActivity implements OnSeekBar
 
     @Override public void onBackPressed() {
         Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

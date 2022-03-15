@@ -34,6 +34,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.R;
@@ -42,9 +46,6 @@ import com.onion99.videoeditor.VideoSliceSeekBar;
 import com.onion99.videoeditor.VideoSliceSeekBar.SeekBarChangeListener;
 import com.onion99.videoeditor.videojoiner.model.VideoPlayerState;
 import com.onion99.videoeditor.videojoiner.util.FileUtils;
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
 
 
 import java.io.File;
@@ -53,8 +54,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant"})
 public class VideoJoinerActivity extends AppCompatActivity implements OnClickListener {
@@ -352,18 +351,17 @@ public class VideoJoinerActivity extends AppCompatActivity implements OnClickLis
         progressDialog.show();
 
         String ffmpegCommand = UtilCommand.main(strArr);
-        FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
-
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
             @Override
-            public void apply(final long executionId, final int returnCode) {
-                Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
                 Log.d("TAG", "FFmpeg process output:");
 
-                Config.printLastCommandOutput(Log.INFO);
+
 
                 progressDialog.dismiss();
-                if (returnCode == RETURN_CODE_SUCCESS) {
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
                     progressDialog.dismiss();
                     Intent intent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
                     intent.setData(Uri.fromFile(new File(VideoJoinerActivity.this.d)));
@@ -378,12 +376,12 @@ public class VideoJoinerActivity extends AppCompatActivity implements OnClickLis
                         VideoJoinerActivity.this.c.postDelayed(VideoJoinerActivity.this.q, 100);
                     }
 
-                } else if (returnCode == RETURN_CODE_CANCEL) {
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
                     Log.d("ffmpegfailure", str);
                     try {
                         new File(str).delete();
                         VideoJoinerActivity.this.deleteFromGallery(str);
-                        Toast.makeText(VideoJoinerActivity.this, "Error Creating Video", 0).show();
+                        Toast.makeText(VideoJoinerActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
@@ -392,7 +390,7 @@ public class VideoJoinerActivity extends AppCompatActivity implements OnClickLis
                     try {
                         new File(str).delete();
                         VideoJoinerActivity.this.deleteFromGallery(str);
-                        Toast.makeText(VideoJoinerActivity.this, "Error Creating Video", 0).show();
+                        Toast.makeText(VideoJoinerActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
@@ -402,7 +400,6 @@ public class VideoJoinerActivity extends AppCompatActivity implements OnClickLis
 
             }
         });
-
 
         getWindow().clearFlags(16);
     }
@@ -452,7 +449,7 @@ public class VideoJoinerActivity extends AppCompatActivity implements OnClickLis
     }
 
     public void k() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 VideoJoinerActivity.this.finish();
@@ -476,7 +473,7 @@ public class VideoJoinerActivity extends AppCompatActivity implements OnClickLis
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(getApplicationContext(), ListVideoAndMyAlbumActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

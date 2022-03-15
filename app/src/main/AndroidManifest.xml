@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="LockedOrientationActivity,RedundantLabel"
     package="com.onion99.videoeditor">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -37,27 +38,26 @@
         android:extractNativeLibs="true"
         android:requestLegacyExternalStorage="true"
         >
-        <activity android:name="com.onion99.videoeditor.SplashActivity"
+        <activity
+            android:name="com.onion99.videoeditor.SplashActivity"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name="com.onion99.videoeditor.Mainactivity"
+            android:exported="true" />
+        <activity
+            android:name="com.onion99.videoeditor.Mainactivity"
             android:theme="@style/AppTheme"
-            android:screenOrientation="portrait"
-
-            ></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.onion99.videoeditor.StartActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-            >
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <provider
@@ -192,7 +192,7 @@
             android:name="com.onion99.videoeditor.videojoiner.GallaryListActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"/>
         <activity
             android:name="com.onion99.videoeditor.videojoiner.GallaryPhotosActivity"
             android:label="@string/app_name"

@@ -42,6 +42,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
+import com.google.android.gms.ads.InterstitialAd;
+import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.AudioPlayer;
@@ -57,21 +63,11 @@ import com.onion99.videoeditor.audiocutter.cutter.SongMetadataReader;
 import com.onion99.videoeditor.audiocutter.cutter.WaveformView;
 import com.onion99.videoeditor.audiocutter.cutter.WaveformView.WaveformListener;
 import com.onion99.videoeditor.listmusicandmymusic.ListMusicAndMyMusicActivity;
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
-
-import com.google.android.gms.ads.InterstitialAd;
-import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
-
 public class AudioCompressorActivity extends AppCompatActivity implements MarkerListener, WaveformListener {
     public boolean aBoolean;
     static final boolean l = true;
@@ -1137,7 +1133,7 @@ public class AudioCompressorActivity extends AppCompatActivity implements Marker
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(getApplicationContext(), ListMusicAndMyMusicActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
@@ -1227,58 +1223,53 @@ public class AudioCompressorActivity extends AppCompatActivity implements Marker
         progressDialog.setMessage("Please Wait");
         progressDialog.show();
             String ffmpegCommand = UtilCommand.main(strArr);
-            FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
+            @Override
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
-                @Override
-                public void apply(final long executionId, final int returnCode) {
-                    Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+                Log.d("TAG", "FFmpeg process output:");
 
-                    Log.d("TAG", "FFmpeg process output:");
+                progressDialog.dismiss();
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
+                    Intent intent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                    intent.setData(Uri.fromFile(new File(AudioCompressorActivity.this.aB)));
+                    AudioCompressorActivity.this.sendBroadcast(intent);
+                    AudioCompressorActivity.this.c();
+                    AudioCompressorActivity.this.refreshGallery(str);
 
-                    Config.printLastCommandOutput(Log.INFO);
-
-                    progressDialog.dismiss();
-                    if (returnCode == RETURN_CODE_SUCCESS) {
-                        Intent intent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
-                        intent.setData(Uri.fromFile(new File(AudioCompressorActivity.this.aB)));
-                        AudioCompressorActivity.this.sendBroadcast(intent);
-                        AudioCompressorActivity.this.c();
-                        AudioCompressorActivity.this.refreshGallery(str);
-
-                    } else if (returnCode == RETURN_CODE_CANCEL) {
-                        Log.d("ffmpegfailure", str);
-                        try {
-                            if (new File(str).delete()){
-                                //add
-                            }
-                            AudioCompressorActivity.this.deleteFromGallery(str);
-                            Toast.makeText(AudioCompressorActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
-                        } catch (Exception th) {
-                            th.printStackTrace();
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
+                    Log.d("ffmpegfailure", str);
+                    try {
+                        if (new File(str).delete()){
+                            //add
                         }
-                    } else {
-                        Log.d("ffmpegfailure", str);
-                        try {
-                            if (new File(str).delete()){
-                                //add
-                            }
-                            AudioCompressorActivity.this.deleteFromGallery(str);
-                            Toast.makeText(AudioCompressorActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
-                        } catch (Exception th) {
-                            th.printStackTrace();
-                        }
+                        AudioCompressorActivity.this.deleteFromGallery(str);
+                        Toast.makeText(AudioCompressorActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
+                    } catch (Exception th) {
+                        th.printStackTrace();
                     }
-
-
+                } else {
+                    Log.d("ffmpegfailure", str);
+                    try {
+                        if (new File(str).delete()){
+                            //add
+                        }
+                        AudioCompressorActivity.this.deleteFromGallery(str);
+                        Toast.makeText(AudioCompressorActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
+                    } catch (Exception th) {
+                        th.printStackTrace();
+                    }
                 }
-            });
+            }
+        });
 
             getWindow().clearFlags(16);
     }
 
 
     public void pload() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override public void onClick(DialogInterface dialogInterface, int i) {
                 AudioCompressorActivity.this.finish();
             }

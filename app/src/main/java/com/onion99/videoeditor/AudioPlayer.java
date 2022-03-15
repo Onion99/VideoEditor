@@ -295,22 +295,22 @@ public class AudioPlayer extends AppCompatActivity implements OnSeekBarChangeLis
         super.onBackPressed();
         if (Helper.ModuleId == 3) {
             Intent intent = new Intent(this, ListVideoAndMyMusicActivity.class);
-            intent.setFlags(67108864);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
         } else if (Helper.ModuleId == 18) {
             Intent intent2 = new Intent(this, ListMusicAndMyMusicActivity.class);
-            intent2.setFlags(67108864);
+            intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent2);
             finish();
         } else if (Helper.ModuleId == 19) {
             Intent intent3 = new Intent(this, ListMusicAndMyMusicActivity.class);
-            intent3.setFlags(67108864);
+            intent3.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent3);
             finish();
         } else if (Helper.ModuleId == 20) {
             Intent intent4 = new Intent(this, ListMusicAndMyMusicActivity.class);
-            intent4.setFlags(67108864);
+            intent4.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent4);
             finish();
         }

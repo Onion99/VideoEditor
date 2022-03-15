@@ -82,7 +82,7 @@ public class MyPhotoToVideoAdapter extends BaseAdapter {
         view.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View view) {
                 Intent intent = new Intent(MyPhotoToVideoAdapter.this.e, VideoPlayer.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("song", ((VideoData) MyPhotoToVideoAdapter.this.c.get(i)).videoPath);
                 MyPhotoToVideoAdapter.this.e.startActivity(intent);
             }

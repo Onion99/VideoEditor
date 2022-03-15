@@ -272,77 +272,77 @@ public class VideoPlayer extends AppCompatActivity implements OnSeekBarChangeLis
         super.onBackPressed();
         if (Helper.ModuleId == 1) {
             Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent.setFlags(67108864);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
         } else if (Helper.ModuleId == 2) {
             Intent intent2 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent2.setFlags(67108864);
+            intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent2);
             finish();
         } else if (Helper.ModuleId == 4) {
             Intent intent3 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent3.setFlags(67108864);
+            intent3.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent3);
             finish();
         } else if (Helper.ModuleId == 5) {
             Intent intent4 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent4.setFlags(67108864);
+            intent4.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent4);
             finish();
         } else if (Helper.ModuleId == 6) {
             Intent intent5 = new Intent(this, com.onion99.videoeditor.videojoiner.ListVideoAndMyAlbumActivity.class);
-            intent5.setFlags(67108864);
+            intent5.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent5);
             finish();
         } else if (Helper.ModuleId == 8) {
             Intent intent6 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent6.setFlags(67108864);
+            intent6.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent6);
             finish();
         } else if (Helper.ModuleId == 9) {
             Intent intent7 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent7.setFlags(67108864);
+            intent7.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent7);
             finish();
         } else if (Helper.ModuleId == 10) {
             Intent intent8 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent8.setFlags(67108864);
+            intent8.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent8);
             finish();
         } else if (Helper.ModuleId == 11) {
             Intent intent9 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent9.setFlags(67108864);
+            intent9.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent9);
             finish();
         } else if (Helper.ModuleId == 13) {
             Intent intent10 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent10.setFlags(67108864);
+            intent10.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent10);
             finish();
         } else if (Helper.ModuleId == 14) {
             Intent intent11 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent11.setFlags(67108864);
+            intent11.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent11);
             finish();
         } else if (Helper.ModuleId == 15) {
             Intent intent12 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent12.setFlags(67108864);
+            intent12.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent12);
             finish();
         } else if (Helper.ModuleId == 16) {
             Intent intent13 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent13.setFlags(67108864);
+            intent13.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent13);
             finish();
         } else if (Helper.ModuleId == 22) {
             Intent intent14 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent14.setFlags(67108864);
+            intent14.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent14);
             finish();
         } else if (Helper.ModuleId == 21) {
             Intent intent15 = new Intent(this, SelectImageAndMyVideoActivity.class);
-            intent15.setFlags(67108864);
+            intent15.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent15);
             finish();
         }

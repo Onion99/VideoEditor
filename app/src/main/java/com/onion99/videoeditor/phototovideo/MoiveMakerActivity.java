@@ -59,6 +59,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.R;
@@ -69,8 +73,7 @@ import com.onion99.videoeditor.phototovideo.model.MusicModel;
 import com.onion99.videoeditor.phototovideo.util.BitmapCompression;
 import com.onion99.videoeditor.phototovideo.util.HsItem;
 import com.onion99.videoeditor.phototovideo.util.Utils;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
+
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -91,8 +94,6 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant"})
 public class MoiveMakerActivity extends AppCompatActivity implements OnSeekBarChangeListener {
@@ -675,7 +676,7 @@ public class MoiveMakerActivity extends AppCompatActivity implements OnSeekBarCh
 
     public void c() {
         Intent intent = new Intent(getApplicationContext(), VideoPlayer.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("song", this.aa);
         startActivity(intent);
         finish();
@@ -760,20 +761,16 @@ public class MoiveMakerActivity extends AppCompatActivity implements OnSeekBarCh
 
         String ffmpegCommand = UtilCommand.main(strArr);
         Log.e("commandss", "" + ffmpegCommand);
-        FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
-
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
             @Override
-            public void apply(final long executionId, final int returnCode) {
-                Log.e("TAGsss", String.format("FFmpeg process exited with rc %d.", returnCode));
+            public void apply(FFmpegSession session) {
+                Log.e("TAGsss", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
-                Log.e("TAGsss", "FFmpeg process output:"+returnCode);
-
-                com.arthenica.mobileffmpeg.Config.printLastCommandOutput(Log.INFO);
-                com.arthenica.mobileffmpeg.Config.printLastCommandOutput(Log.ERROR);
+                Log.e("TAGsss", "FFmpeg process output:"+session.getReturnCode());
 
                 progressDialog.dismiss();
 
-                if (returnCode == RETURN_CODE_SUCCESS) {
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
                     MoiveMakerActivity.this.m();
                     MoiveMakerActivity.this.k();
                     MoiveMakerActivity.this.i();
@@ -784,7 +781,7 @@ public class MoiveMakerActivity extends AppCompatActivity implements OnSeekBarCh
                     MoiveMakerActivity.this.s = false;
                     MoiveMakerActivity.this.sendBroadcast(new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE", Uri.fromFile(new File(MoiveMakerActivity.this.aa))));
                     MoiveMakerActivity.this.b();
-                } else if (returnCode == RETURN_CODE_CANCEL) {
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
                     Log.d("ffmpegfailure", str);
                     try {
                         new File(str).delete();
@@ -804,10 +801,8 @@ public class MoiveMakerActivity extends AppCompatActivity implements OnSeekBarCh
                     }
                 }
 
-
             }
         });
-
         getWindow().clearFlags(16);
     }
 
@@ -1708,7 +1703,7 @@ public class MoiveMakerActivity extends AppCompatActivity implements OnSeekBarCh
 
 
     public void o() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 MoiveMakerActivity.this.finish();

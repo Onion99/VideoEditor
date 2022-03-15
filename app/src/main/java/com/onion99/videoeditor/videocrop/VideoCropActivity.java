@@ -43,6 +43,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.Helper;
@@ -53,16 +57,13 @@ import com.onion99.videoeditor.VideoPlayerState;
 import com.onion99.videoeditor.VideoSliceSeekBar;
 import com.onion99.videoeditor.VideoSliceSeekBar.SeekBarChangeListener;
 import com.onion99.videoeditor.listvideoandmyvideo.ListVideoAndMyAlbumActivity;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
+
 import com.edmodo.cropper.CropImageView;
 import com.edmodo.cropper.cropwindow.edge.Edge;
 
 
 import java.io.File;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant"})
 public class VideoCropActivity extends AppCompatActivity {
@@ -219,7 +220,7 @@ public class VideoCropActivity extends AppCompatActivity {
 
     public void c() {
         Intent intent = new Intent(getApplicationContext(), VideoPlayer.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("song", this.D);
         startActivity(intent);
         finish();
@@ -354,18 +355,15 @@ public class VideoCropActivity extends AppCompatActivity {
         progressDialog.setMessage("Please Wait");
         progressDialog.show();
         String ffmpegCommand = UtilCommand.main(strArr);
-        FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
-
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
             @Override
-            public void apply(final long executionId, final int returnCode) {
-                Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
                 Log.d("TAG", "FFmpeg process output:");
 
-                com.arthenica.mobileffmpeg.Config.printLastCommandOutput(Log.INFO);
-
-                progressDialog.dismiss();
-                if (returnCode == RETURN_CODE_SUCCESS) {
+                        progressDialog.dismiss();
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
                     progressDialog.dismiss();
                     Intent intent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
                     intent.setData(Uri.fromFile(new File(VideoCropActivity.this.D)));
@@ -373,7 +371,7 @@ public class VideoCropActivity extends AppCompatActivity {
                     VideoCropActivity.this.b();
                     VideoCropActivity.this.refreshGallery(str);
 
-                } else if (returnCode == RETURN_CODE_CANCEL) {
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
                     Log.d("ffmpegfailure", str);
                     try {
                         new File(str).delete();
@@ -392,7 +390,6 @@ public class VideoCropActivity extends AppCompatActivity {
                         th.printStackTrace();
                     }
                 }
-
 
             }
         });
@@ -825,7 +822,7 @@ public class VideoCropActivity extends AppCompatActivity {
 
 
     public void j() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 VideoCropActivity.this.finish();
@@ -866,7 +863,7 @@ public class VideoCropActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

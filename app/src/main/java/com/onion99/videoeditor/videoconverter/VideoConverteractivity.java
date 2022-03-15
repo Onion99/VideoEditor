@@ -41,14 +41,16 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.R;
 import com.onion99.videoeditor.UtilCommand;
 import com.onion99.videoeditor.VideoPlayerState;
 import com.onion99.videoeditor.listvideoandmyvideo.ListVideoAndMyAlbumActivity;
 
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
 
 
 import java.io.File;
@@ -56,8 +58,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant"})
 public class VideoConverteractivity extends AppCompatActivity implements OnSeekBarChangeListener {
@@ -154,21 +154,20 @@ public class VideoConverteractivity extends AppCompatActivity implements OnSeekB
             VideoConverteractivity.this.g.setMessage("Processing...");
 
             String ffmpegCommand = UtilCommand.main(strArr);
-            com.arthenica.mobileffmpeg.FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
-
+            FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
                 @Override
-                public void apply(final long executionId, final int returnCode) {
-                    Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+                public void apply(FFmpegSession session) {
+                    Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
                     Log.d("TAG", "FFmpeg process output:");
 
-                    Config.printLastCommandOutput(Log.INFO);
+
 
                     g.dismiss();
-                    if (returnCode == RETURN_CODE_SUCCESS) {
+                    if (ReturnCode.isSuccess(session.getReturnCode())) {
                         a.this.b();
 
-                    } else if (returnCode == RETURN_CODE_CANCEL) {
+                    } else if (ReturnCode.isCancel(session.getReturnCode())) {
                         Toast.makeText(VideoConverteractivity.this, "Error Creating Video!", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(VideoConverteractivity.this, "Error Creating Video!", Toast.LENGTH_LONG).show();
@@ -177,7 +176,6 @@ public class VideoConverteractivity extends AppCompatActivity implements OnSeekB
 
                 }
             });
-
                 return 0;
         }
 
@@ -340,7 +338,7 @@ public class VideoConverteractivity extends AppCompatActivity implements OnSeekB
 
 
     public void c() {
-        new Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override public void onClick(DialogInterface dialogInterface, int i) {
                 VideoConverteractivity.this.finish();
             }
@@ -379,7 +377,7 @@ public class VideoConverteractivity extends AppCompatActivity implements OnSeekB
     @Override public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

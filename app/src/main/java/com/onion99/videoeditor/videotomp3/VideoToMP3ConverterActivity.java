@@ -50,6 +50,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.AudioPlayer;
@@ -59,9 +63,6 @@ import com.onion99.videoeditor.VideoPlayerState;
 import com.onion99.videoeditor.VideoSliceSeekBar;
 import com.onion99.videoeditor.VideoSliceSeekBar.SeekBarChangeListener;
 import com.onion99.videoeditor.listvideowithmymusic.ListVideoAndMyMusicActivity;
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
 
 
 import java.io.File;
@@ -73,8 +74,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant"})
 public class VideoToMP3ConverterActivity extends AppCompatActivity {
@@ -530,69 +529,67 @@ public class VideoToMP3ConverterActivity extends AppCompatActivity {
             this.t.setCancelable(false);
             this.t.show();
             String ffmpegCommand = UtilCommand.main(strArr);
-            FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
+            @Override
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
-                @Override
-                public void apply(final long executionId, final int returnCode) {
-                    Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+                Log.d("TAG", "FFmpeg process output:");
 
-                    Log.d("TAG", "FFmpeg process output:");
 
-                    Config.printLastCommandOutput(Log.INFO);
 
-                    t.dismiss();
-                    if (returnCode == RETURN_CODE_SUCCESS) {
-                        VideoToMP3ConverterActivity.this.t.dismiss();
-                        if (VideoToMP3ConverterActivity.this.d.equals("MP3")) {
-                            StringBuilder sb = new StringBuilder(String.valueOf(Environment.getExternalStorageDirectory().getPath()));
-                            sb.append("/VEditor/VideoToMP3/");
-                            File file = new File(sb.toString());
-                            String substring = VideoToMP3ConverterActivity.this.c.substring(VideoToMP3ConverterActivity.this.c.lastIndexOf("/") + 1);
-                            String substring2 = substring.substring(0, substring.lastIndexOf("."));
-                            if (file.exists()) {
-                                File file2 = new File(file, substring);
-                                StringBuilder sb2 = new StringBuilder(String.valueOf(substring2));
-                                sb2.append(".mp3");
-                                File file3 = new File(file, sb2.toString());
-                                if (file2.exists()) {
-                                    file2.renameTo(file3);
-                                }
-                                VideoToMP3ConverterActivity.this.c = file3.getPath();
+                t.dismiss();
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
+                    VideoToMP3ConverterActivity.this.t.dismiss();
+                    if (VideoToMP3ConverterActivity.this.d.equals("MP3")) {
+                        StringBuilder sb = new StringBuilder(String.valueOf(Environment.getExternalStorageDirectory().getPath()));
+                        sb.append("/VEditor/VideoToMP3/");
+                        File file = new File(sb.toString());
+                        String substring = VideoToMP3ConverterActivity.this.c.substring(VideoToMP3ConverterActivity.this.c.lastIndexOf("/") + 1);
+                        String substring2 = substring.substring(0, substring.lastIndexOf("."));
+                        if (file.exists()) {
+                            File file2 = new File(file, substring);
+                            StringBuilder sb2 = new StringBuilder(String.valueOf(substring2));
+                            sb2.append(".mp3");
+                            File file3 = new File(file, sb2.toString());
+                            if (file2.exists()) {
+                                file2.renameTo(file3);
                             }
-                        }
-                        Intent intent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
-                        intent.setData(Uri.fromFile(new File(VideoToMP3ConverterActivity.this.c)));
-                        VideoToMP3ConverterActivity.this.sendBroadcast(intent);
-                        VideoToMP3ConverterActivity.this.scanMedia(VideoToMP3ConverterActivity.this.c);
-                        Intent intent2 = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
-                        intent2.setData(Uri.fromFile(new File(VideoToMP3ConverterActivity.this.c)));
-                        VideoToMP3ConverterActivity.this.sendBroadcast(intent2);
-                        VideoToMP3ConverterActivity.this.b();
-                        VideoToMP3ConverterActivity.this.refreshGallery(str);
-
-                    } else if (returnCode == RETURN_CODE_CANCEL) {
-                        Log.d("ffmpegfailure", str);
-                        try {
-                            new File(str).delete();
-                            VideoToMP3ConverterActivity.this.deleteFromGallery(str);
-                            Toast.makeText(VideoToMP3ConverterActivity.this, "Error Creating Video", 0).show();
-                        } catch (Throwable th) {
-                            th.printStackTrace();
-                        }
-                    } else {
-                        Log.d("ffmpegfailure", str);
-                        try {
-                            new File(str).delete();
-                            VideoToMP3ConverterActivity.this.deleteFromGallery(str);
-                            Toast.makeText(VideoToMP3ConverterActivity.this, "Error Creating Video", 0).show();
-                        } catch (Throwable th) {
-                            th.printStackTrace();
+                            VideoToMP3ConverterActivity.this.c = file3.getPath();
                         }
                     }
+                    Intent intent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                    intent.setData(Uri.fromFile(new File(VideoToMP3ConverterActivity.this.c)));
+                    VideoToMP3ConverterActivity.this.sendBroadcast(intent);
+                    VideoToMP3ConverterActivity.this.scanMedia(VideoToMP3ConverterActivity.this.c);
+                    Intent intent2 = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
+                    intent2.setData(Uri.fromFile(new File(VideoToMP3ConverterActivity.this.c)));
+                    VideoToMP3ConverterActivity.this.sendBroadcast(intent2);
+                    VideoToMP3ConverterActivity.this.b();
+                    VideoToMP3ConverterActivity.this.refreshGallery(str);
 
-
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
+                    Log.d("ffmpegfailure", str);
+                    try {
+                        new File(str).delete();
+                        VideoToMP3ConverterActivity.this.deleteFromGallery(str);
+                        Toast.makeText(VideoToMP3ConverterActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
+                } else {
+                    Log.d("ffmpegfailure", str);
+                    try {
+                        new File(str).delete();
+                        VideoToMP3ConverterActivity.this.deleteFromGallery(str);
+                        Toast.makeText(VideoToMP3ConverterActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
                 }
-            });
+
+            }
+        });
 
             getWindow().clearFlags(16);
     }
@@ -845,7 +842,7 @@ public class VideoToMP3ConverterActivity extends AppCompatActivity {
 
 
     public void f() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override public void onClick(DialogInterface dialogInterface, int i) {
                 VideoToMP3ConverterActivity.this.finish();
             }
@@ -884,7 +881,7 @@ public class VideoToMP3ConverterActivity extends AppCompatActivity {
     @Override public void onBackPressed() {
         super.onBackPressed();
         Intent intent = new Intent(this, ListVideoAndMyMusicActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

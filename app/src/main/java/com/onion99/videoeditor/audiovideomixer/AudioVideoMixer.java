@@ -36,6 +36,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.AudioSliceSeekBar;
@@ -47,9 +51,6 @@ import com.onion99.videoeditor.VideoPlayerState;
 import com.onion99.videoeditor.VideoSliceSeekBar;
 import com.onion99.videoeditor.VideoSliceSeekBar.SeekBarChangeListener;
 import com.onion99.videoeditor.listvideoandmyvideo.ListVideoAndMyAlbumActivity;
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
 
 
 import java.io.File;
@@ -59,8 +60,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant"})
 public class AudioVideoMixer extends AppCompatActivity {
@@ -246,7 +245,7 @@ public class AudioVideoMixer extends AppCompatActivity {
 
     public void e() {
         Intent intent = new Intent(getApplicationContext(), VideoPlayer.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("song", this.l);
         startActivity(intent);
         finish();
@@ -286,18 +285,17 @@ public class AudioVideoMixer extends AppCompatActivity {
         this.m.setIndeterminate(n);
         this.m.show();
         String ffmpegCommand = UtilCommand.main(strArr);
-        FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
-
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
             @Override
-            public void apply(final long executionId, final int returnCode) {
-                Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
                 Log.d("TAG", "FFmpeg process output:");
 
-                Config.printLastCommandOutput(Log.INFO);
+
 
                 m.dismiss();
-                if (returnCode == RETURN_CODE_SUCCESS) {
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
                     if (AudioVideoMixer.this.m != null && AudioVideoMixer.this.m.isShowing()) {
                         AudioVideoMixer.this.m.dismiss();
                     }
@@ -305,18 +303,17 @@ public class AudioVideoMixer extends AppCompatActivity {
                     AudioVideoMixer.this.d();
                     AudioVideoMixer.this.refreshGallery(str);
 
-                } else if (returnCode == RETURN_CODE_CANCEL) {
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
                     Log.d("ffmpegfailure", str);
                     new File(str).delete();
                     AudioVideoMixer.this.deleteFromGallery(str);
-                    Toast.makeText(AudioVideoMixer.this, "Error Creating Video", 0).show();
+                    Toast.makeText(AudioVideoMixer.this, "Error Creating Video", Toast.LENGTH_LONG).show();
                 } else {
                     Log.d("ffmpegfailure", str);
                     new File(str).delete();
                     AudioVideoMixer.this.deleteFromGallery(str);
-                    Toast.makeText(AudioVideoMixer.this, "Error Creating Video", 0).show();
+                    Toast.makeText(AudioVideoMixer.this, "Error Creating Video", Toast.LENGTH_LONG).show();
                 }
-
 
             }
         });
@@ -523,7 +520,7 @@ public class AudioVideoMixer extends AppCompatActivity {
 
 
     public void k() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 AudioVideoMixer.this.finish();
@@ -571,7 +568,7 @@ public class AudioVideoMixer extends AppCompatActivity {
             d = null;
         }
         Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
@@ -598,7 +595,7 @@ public class AudioVideoMixer extends AppCompatActivity {
                 }
             }
             Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent.setFlags(67108864);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
             return n;

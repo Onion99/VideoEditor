@@ -82,7 +82,7 @@ public class MyAlbumAdapter extends BaseAdapter {
         view.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View view) {
                 Intent intent = new Intent(MyAlbumAdapter.this.e, VideoPlayer.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("song", ((VideoData) MyAlbumAdapter.this.c.get(i)).videoPath);
                 MyAlbumAdapter.this.e.startActivity(intent);
             }

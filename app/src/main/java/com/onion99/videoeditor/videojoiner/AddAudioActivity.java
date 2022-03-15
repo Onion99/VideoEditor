@@ -38,6 +38,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.AudioSliceSeekBar;
@@ -49,9 +53,6 @@ import com.onion99.videoeditor.VideoPlayerState;
 import com.onion99.videoeditor.VideoSliceSeekBar;
 import com.onion99.videoeditor.VideoSliceSeekBar.SeekBarChangeListener;
 import com.onion99.videoeditor.audiovideomixer.AddAudio;
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
 
 
 import java.io.File;
@@ -61,8 +62,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant"})
 public class AddAudioActivity extends AppCompatActivity {
@@ -258,7 +257,7 @@ public class AddAudioActivity extends AppCompatActivity {
 
     public void e() {
         Intent intent = new Intent(getApplicationContext(), VideoPlayer.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("song", this.l);
         startActivity(intent);
         finish();
@@ -297,64 +296,60 @@ public class AddAudioActivity extends AppCompatActivity {
             this.m.setIndeterminate(BOOLEAN);
             this.m.show();
             String ffmpegCommand = UtilCommand.main(strArr);
-            FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
+            @Override
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
-                @Override
-                public void apply(final long executionId, final int returnCode) {
-                    Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+                Log.d("TAG", "FFmpeg process output:");
 
-                    Log.d("TAG", "FFmpeg process output:");
 
-                    Config.printLastCommandOutput(Log.INFO);
 
-                    m.dismiss();
-                    if (returnCode == RETURN_CODE_SUCCESS) {
-                        if (AddAudioActivity.this.m != null && AddAudioActivity.this.m.isShowing()) {
-                            AddAudioActivity.this.m.dismiss();
-                        }
-                        MediaScannerConnection.scanFile(AddAudioActivity.this.k, new String[]{AddAudioActivity.this.l}, new String[]{"mkv"}, null);
-                        File file = new File(AddAudioActivity.this.w.getFilename());
-                        if (file.exists()) {
-                            file.delete();
-                            try {
-                                ContentResolver contentResolver = AddAudioActivity.this.getContentResolver();
-                                Uri uri = AddAudioActivity.this.n;
-                                StringBuilder sb = new StringBuilder();
-                                sb.append("_data=\"");
-                                sb.append(AddAudioActivity.this.w.getFilename());
-                                sb.append("\"");
-                                contentResolver.delete(uri, sb.toString(), null);
-                            } catch (Exception unused) {
-                            }
-                        }
-                        MediaScannerConnection.scanFile(AddAudioActivity.this.k, new String[]{AddAudioActivity.this.w.getFilename()}, new String[]{"mkv"}, null);
-                        AddAudioActivity.this.d();
-                        AddAudioActivity.this.refreshGallery(str);
-
-                    } else if (returnCode == RETURN_CODE_CANCEL) {
-                        Log.d("ffmpegfailure", str);
+                m.dismiss();
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
+                    if (AddAudioActivity.this.m != null && AddAudioActivity.this.m.isShowing()) {
+                        AddAudioActivity.this.m.dismiss();
+                    }
+                    MediaScannerConnection.scanFile(AddAudioActivity.this.k, new String[]{AddAudioActivity.this.l}, new String[]{"mkv"}, null);
+                    File file = new File(AddAudioActivity.this.w.getFilename());
+                    if (file.exists()) {
+                        file.delete();
                         try {
-                            new File(str).delete();
-                            AddAudioActivity.this.deleteFromGallery(str);
-                            Toast.makeText(AddAudioActivity.this, "Error Creating Video", 0).show();
-                        } catch (Throwable th) {
-                            th.printStackTrace();
-                        }
-                    } else {
-                        Log.d("ffmpegfailure", str);
-                        try {
-                            new File(str).delete();
-                            AddAudioActivity.this.deleteFromGallery(str);
-                            Toast.makeText(AddAudioActivity.this, "Error Creating Video", 0).show();
-                        } catch (Throwable th) {
-                            th.printStackTrace();
+                            ContentResolver contentResolver = AddAudioActivity.this.getContentResolver();
+                            Uri uri = AddAudioActivity.this.n;
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("_data=\"");
+                            sb.append(AddAudioActivity.this.w.getFilename());
+                            sb.append("\"");
+                            contentResolver.delete(uri, sb.toString(), null);
+                        } catch (Exception unused) {
                         }
                     }
+                    MediaScannerConnection.scanFile(AddAudioActivity.this.k, new String[]{AddAudioActivity.this.w.getFilename()}, new String[]{"mkv"}, null);
+                    AddAudioActivity.this.d();
+                    AddAudioActivity.this.refreshGallery(str);
 
-
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
+                    Log.d("ffmpegfailure", str);
+                    try {
+                        new File(str).delete();
+                        AddAudioActivity.this.deleteFromGallery(str);
+                        Toast.makeText(AddAudioActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
+                } else {
+                    Log.d("ffmpegfailure", str);
+                    try {
+                        new File(str).delete();
+                        AddAudioActivity.this.deleteFromGallery(str);
+                        Toast.makeText(AddAudioActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
+                    } catch (Throwable th) {
+                        th.printStackTrace();
+                    }
                 }
-            });
-
+            }
+        });
             getWindow().clearFlags(16);
     }
 
@@ -564,7 +559,7 @@ public class AddAudioActivity extends AppCompatActivity {
 
 
     public void k() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override public void onClick(DialogInterface dialogInterface, int i) {
                 AddAudioActivity.this.finish();
             }
@@ -642,7 +637,7 @@ public class AddAudioActivity extends AppCompatActivity {
         if (menuItem.getItemId() == R.id.Skip) {
             Bundle extras = getIntent().getExtras();
             Intent intent = new Intent(getApplicationContext(), VideoPlayer.class);
-            intent.setFlags(67108864);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.putExtra("song", extras.getString("song"));
             startActivity(intent);
             finish();

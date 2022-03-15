@@ -75,7 +75,7 @@ public class GIFPreviewActivity extends AppCompatActivity {
             this.d = intent.getBooleanExtra("isfrommain", false);
             if (this.i == null) {
                 Intent intent2 = new Intent(this, ListVideoAndMyAlbumActivity.class);
-                intent2.setFlags(67108864);
+                intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent2);
                 finish();
             }
@@ -106,7 +106,7 @@ public class GIFPreviewActivity extends AppCompatActivity {
 
     @Override public void onBackPressed() {
         Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
@@ -152,7 +152,7 @@ public class GIFPreviewActivity extends AppCompatActivity {
    @Override public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == 16908332) {
             Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent.setFlags(67108864);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
             return h;

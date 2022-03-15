@@ -69,6 +69,10 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.R;
@@ -87,8 +91,7 @@ import com.onion99.videoeditor.videowatermark.addtext.StickerData;
 import com.onion99.videoeditor.videowatermark.addtext.StickerView;
 import com.onion99.videoeditor.videowatermark.addtext.StickerView.OnStickerOperationListener;
 import com.onion99.videoeditor.videowatermark.addtext.TextSticker;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
+
 
 
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
@@ -108,8 +111,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"ResourceAsColor", "WrongConstant", "ResourceType"})
 @TargetApi(16)
@@ -672,7 +673,7 @@ public class VideoWatermarkActivity extends AppCompatActivity {
 
     public void c() {
         Intent intent = new Intent(getApplicationContext(), VideoPlayer.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("song", this.Output);
         startActivity(intent);
         finish();
@@ -726,28 +727,26 @@ public class VideoWatermarkActivity extends AppCompatActivity {
         progressDialog.show();
 
         String ffmpegCommand = UtilCommand.main(strArr);
-        FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
-
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
             @Override
-            public void apply(final long executionId, final int returnCode) {
-                Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
                 Log.d("TAG", "FFmpeg process output:");
 
-                com.arthenica.mobileffmpeg.Config.printLastCommandOutput(Log.INFO);
 
-                progressDialog.dismiss();
-                if (returnCode == RETURN_CODE_SUCCESS) {
+                        progressDialog.dismiss();
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
                     progressDialog.dismiss();
                     VideoWatermarkActivity.this.sendBroadcast(new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE", Uri.fromFile(new File(VideoWatermarkActivity.this.Output))));
                     VideoWatermarkActivity.this.b();
 
-                } else if (returnCode == RETURN_CODE_CANCEL) {
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
                     Log.d("ffmpegfailure", str);
                     try {
                         new File(str).delete();
                         VideoWatermarkActivity.this.deleteFromGallery(str);
-                        Toast.makeText(VideoWatermarkActivity.this.getApplicationContext(), "Error Creating Video", 0).show();
+                        Toast.makeText(VideoWatermarkActivity.this.getApplicationContext(), "Error Creating Video", Toast.LENGTH_LONG).show();
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
@@ -756,7 +755,7 @@ public class VideoWatermarkActivity extends AppCompatActivity {
                     try {
                         new File(str).delete();
                         VideoWatermarkActivity.this.deleteFromGallery(str);
-                        Toast.makeText(VideoWatermarkActivity.this.getApplicationContext(), "Error Creating Video", 0).show();
+                        Toast.makeText(VideoWatermarkActivity.this.getApplicationContext(), "Error Creating Video", Toast.LENGTH_LONG).show();
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
@@ -1600,7 +1599,7 @@ public class VideoWatermarkActivity extends AppCompatActivity {
 
 
     public void l() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 VideoWatermarkActivity.this.finish();
@@ -1647,7 +1646,7 @@ public class VideoWatermarkActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == 16908332) {
             Intent intent = new Intent(this, ListVideoAndMyAlbumActivity.class);
-            intent.setFlags(67108864);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
             return H;

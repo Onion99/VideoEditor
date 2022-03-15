@@ -41,6 +41,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.R;
@@ -51,9 +55,6 @@ import com.onion99.videoeditor.StartActivity;
 import com.onion99.videoeditor.StaticMethods;
 import com.onion99.videoeditor.UtilCommand;
 import com.onion99.videoeditor.VideoPlayer;
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
 
 
 import java.io.File;
@@ -62,8 +63,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant", "ResourceType"})
 public class VideoMuteActivity extends AppCompatActivity {
@@ -201,7 +200,7 @@ public class VideoMuteActivity extends AppCompatActivity {
 
     public void c() {
         Intent intent = new Intent(getApplicationContext(), VideoPlayer.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("song", this.y);
         startActivity(intent);
         finish();
@@ -326,18 +325,17 @@ public class VideoMuteActivity extends AppCompatActivity {
         progressDialog.setMessage("Please Wait");
         progressDialog.show();
         String ffmpegCommand = UtilCommand.main(strArr);
-        FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
-
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
             @Override
-            public void apply(final long executionId, final int returnCode) {
-                Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
                 Log.d("TAG", "FFmpeg process output:");
 
-                Config.printLastCommandOutput(Log.INFO);
+
 
                 progressDialog.dismiss();
-                if (returnCode == RETURN_CODE_SUCCESS) {
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
                     progressDialog.dismiss();
                     Intent intent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
                     intent.setData(Uri.fromFile(new File(VideoMuteActivity.this.y)));
@@ -345,12 +343,12 @@ public class VideoMuteActivity extends AppCompatActivity {
                     VideoMuteActivity.this.b();
                     VideoMuteActivity.this.refreshGallery(str);
 
-                } else if (returnCode == RETURN_CODE_CANCEL) {
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
                     Log.d("ffmpegfailure", str);
                     try {
                         new File(str).delete();
                         VideoMuteActivity.this.deleteFromGallery(str);
-                        Toast.makeText(VideoMuteActivity.this, "Error Creating Video", 0).show();
+                        Toast.makeText(VideoMuteActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
@@ -359,7 +357,7 @@ public class VideoMuteActivity extends AppCompatActivity {
                     try {
                         new File(str).delete();
                         VideoMuteActivity.this.deleteFromGallery(str);
-                        Toast.makeText(VideoMuteActivity.this, "Error Creating Video", 0).show();
+                        Toast.makeText(VideoMuteActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
@@ -645,7 +643,7 @@ public class VideoMuteActivity extends AppCompatActivity {
 
 
     public void g() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 VideoMuteActivity.this.finish();
@@ -702,7 +700,7 @@ public class VideoMuteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == 16908332) {
             Intent intent = new Intent(this, StartActivity.class);
-            intent.setFlags(67108864);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             finish();
             return u;

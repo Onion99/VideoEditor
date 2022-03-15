@@ -96,69 +96,69 @@ public class SelectVideoAdapter extends BaseAdapter {
             @Override public void onClick(View view) {
                 if (Helper.ModuleId == 1) {
                     Intent intent = new Intent(SelectVideoAdapter.this.e, VideoCutter.class);
-                    intent.setFlags(67108864);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.putExtra("path", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent);
                 } else if (Helper.ModuleId == 2) {
                     Intent intent2 = new Intent(SelectVideoAdapter.this.e, VideoCompressor.class);
-                    intent2.setFlags(67108864);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent2.putExtra("videouri", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent2);
                 } else if (Helper.ModuleId == 4) {
                     Intent intent3 = new Intent(SelectVideoAdapter.this.e, AudioVideoMixer.class);
-                    intent3.setFlags(67108864);
+                    intent3.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     Bundle bundle = new Bundle();
                     bundle.putString("song", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     intent3.putExtras(bundle);
                     SelectVideoAdapter.this.e.startActivity(intent3);
                 } else if (Helper.ModuleId == 5) {
                     Intent intent4 = new Intent(SelectVideoAdapter.this.e, VideoMuteActivity.class);
-                    intent4.setFlags(67108864);
+                    intent4.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent4.putExtra("videouri", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent4);
                 } else if (Helper.ModuleId == 8) {
                     Intent intent5 = new Intent(SelectVideoAdapter.this.e, VideoConverteractivity.class);
-                    intent5.setFlags(67108864);
+                    intent5.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent5.putExtra("videofilename", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent5);
                 } else if (Helper.ModuleId == 9) {
                     Intent intent6 = new Intent(SelectVideoAdapter.this.e, FastMotionVideoActivity.class);
-                    intent6.setFlags(67108864);
+                    intent6.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent6.putExtra("videofilename", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent6);
                 } else if (Helper.ModuleId == 10) {
                     Intent intent7 = new Intent(SelectVideoAdapter.this.e, SlowMotionVideoActivity.class);
-                    intent7.setFlags(67108864);
+                    intent7.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent7.putExtra("videofilename", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent7);
                 } else if (Helper.ModuleId == 11) {
                     Intent intent8 = new Intent(SelectVideoAdapter.this.e, VideoCropActivity.class);
-                    intent8.setFlags(67108864);
+                    intent8.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent8.putExtra("videofilename", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent8);
                 } else if (Helper.ModuleId == 13) {
                     Intent intent9 = new Intent(SelectVideoAdapter.this.e, VideoRotateActivity.class);
-                    intent9.setFlags(67108864);
+                    intent9.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent9.putExtra("videoPath", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent9);
                 } else if (Helper.ModuleId == 14) {
                     Intent intent10 = new Intent(SelectVideoAdapter.this.e, VideoMirrorActivity.class);
-                    intent10.setFlags(67108864);
+                    intent10.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent10.putExtra("videouri", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent10);
                 } else if (Helper.ModuleId == 15) {
                     Intent intent11 = new Intent(SelectVideoAdapter.this.e, VideoSplitterActivity.class);
-                    intent11.setFlags(67108864);
+                    intent11.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent11.putExtra("videouri", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent11);
                 } else if (Helper.ModuleId == 16) {
                     Intent intent12 = new Intent(SelectVideoAdapter.this.e, VideoReverseActivity.class);
-                    intent12.setFlags(67108864);
+                    intent12.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent12.putExtra("videouri", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent12);
                 } else if (Helper.ModuleId == 22) {
                     Intent intent13 = new Intent(SelectVideoAdapter.this.e, VideoWatermarkActivity.class);
-                    intent13.setFlags(67108864);
+                    intent13.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent13.putExtra("videopath", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent13);
                 }

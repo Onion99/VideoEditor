@@ -86,12 +86,12 @@ public class SelectVideoAdapter extends BaseAdapter {
             @Override public void onClick(View view) {
                 if (Helper.ModuleId == 1) {
                     Intent intent = new Intent(SelectVideoAdapter.this.e, VideoCutter.class);
-                    intent.setFlags(67108864);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.putExtra("path", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent);
                 } else if (Helper.ModuleId == 2) {
                     Intent intent2 = new Intent(SelectVideoAdapter.this.e, VideoCompressor.class);
-                    intent2.setFlags(67108864);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent2.putExtra("videouri", ((VideoData) SelectVideoAdapter.this.c.get(i)).videoPath);
                     SelectVideoAdapter.this.e.startActivity(intent2);
                 } else if (Helper.ModuleId == 3) {

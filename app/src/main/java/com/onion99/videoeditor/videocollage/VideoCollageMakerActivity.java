@@ -64,6 +64,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.onion99.videoeditor.Adclick;
 import com.onion99.videoeditor.Ads;
 import com.onion99.videoeditor.R;
@@ -84,9 +88,6 @@ import com.onion99.videoeditor.videocollage.utils.BorderFrameLayout;
 import com.onion99.videoeditor.videocollage.utils.DrawImageCanvas;
 import com.onion99.videoeditor.videocollage.utils.ImageViewTouchListener;
 import com.onion99.videoeditor.videocollage.utils.Utils;
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
 import com.bumptech.glide.load.Key;
 
 
@@ -107,8 +108,6 @@ import java.util.concurrent.TimeUnit;
 import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 @SuppressLint({"WrongConstant"})
 public class VideoCollageMakerActivity extends AppCompatActivity implements OnSeekBarChangeListener {
@@ -911,7 +910,7 @@ public class VideoCollageMakerActivity extends AppCompatActivity implements OnSe
 
     public void d() {
         Intent intent = new Intent(getApplicationContext(), VideoPlayer.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("song", this.W);
         startActivity(intent);
         finish();
@@ -4446,30 +4445,29 @@ public class VideoCollageMakerActivity extends AppCompatActivity implements OnSe
         progressDialog.setMessage("Please Wait");
         progressDialog.show();
         String ffmpegCommand = UtilCommand.main(strArr);
-        FFmpeg.executeAsync(ffmpegCommand, new ExecuteCallback() {
-
+        FFmpegKit.executeAsync(ffmpegCommand, new FFmpegSessionCompleteCallback() {
             @Override
-            public void apply(final long executionId, final int returnCode) {
-                Log.d("TAG", String.format("FFmpeg process exited with rc %d.", returnCode));
+            public void apply(FFmpegSession session) {
+                Log.d("TAG", String.format("FFmpeg process exited with rc %s.", session.getReturnCode()));
 
                 Log.d("TAG", "FFmpeg process output:");
 
-                Config.printLastCommandOutput(Log.INFO);
+
 
                 progressDialog.dismiss();
-                if (returnCode == RETURN_CODE_SUCCESS) {
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
                     progressDialog.dismiss();
                     MediaScannerConnection.scanFile(VideoCollageMakerActivity.this.I, new String[]{VideoCollageMakerActivity.this.W}, new String[]{"mkv"}, null);
                     VideoCollageMakerActivity.this.sendBroadcast(new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE", Uri.fromFile(new File(VideoCollageMakerActivity.this.W))));
                     VideoCollageMakerActivity.this.y.postDelayed(VideoCollageMakerActivity.this.ah, 1000);
                     VideoCollageMakerActivity.this.refreshGallery(str);
 
-                } else if (returnCode == RETURN_CODE_CANCEL) {
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
                     Log.d("ffmpegfailure", str);
                     try {
                         new File(str).delete();
                         VideoCollageMakerActivity.this.deleteFromGallery(str);
-                        Toast.makeText(VideoCollageMakerActivity.this, "Error Creating Video", 0).show();
+                        Toast.makeText(VideoCollageMakerActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
@@ -4479,17 +4477,14 @@ public class VideoCollageMakerActivity extends AppCompatActivity implements OnSe
                     try {
                         new File(str).delete();
                         VideoCollageMakerActivity.this.deleteFromGallery(str);
-                        Toast.makeText(VideoCollageMakerActivity.this, "Error Creating Video", 0).show();
+                        Toast.makeText(VideoCollageMakerActivity.this, "Error Creating Video", Toast.LENGTH_LONG).show();
                     } catch (Throwable th) {
                         th.printStackTrace();
                     }
 
                 }
-
-
             }
         });
-
         getWindow().clearFlags(16);
     }
 
@@ -5503,7 +5498,7 @@ public class VideoCollageMakerActivity extends AppCompatActivity implements OnSe
     }
 
     public void m() {
-        new AlertDialog.Builder(this).setIcon(17301543).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(17039370, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("Device not supported").setMessage("FFmpeg is not supported on your device").setCancelable(false).setPositiveButton(R.string.alert_ok_button, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 VideoCollageMakerActivity.this.finish();
@@ -5579,7 +5574,7 @@ public class VideoCollageMakerActivity extends AppCompatActivity implements OnSe
         }
         this.L.dismiss();
         Intent intent = new Intent(this, ListCollageAndMyAlbumActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }

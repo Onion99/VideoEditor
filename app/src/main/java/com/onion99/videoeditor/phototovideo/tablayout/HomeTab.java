@@ -318,7 +318,7 @@ public class HomeTab extends FragmentActivity {
                 Utils.createImageList.clear();
                 Utils.imageUri.clear();
                 Intent intent = new Intent(HomeTab.this, SelectImageAndMyVideoActivity.class);
-                intent.setFlags(67108864);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 HomeTab.this.startActivity(intent);
                 HomeTab.this.finish();
             }
@@ -416,7 +416,7 @@ public class HomeTab extends FragmentActivity {
         Utils.createImageList.clear();
         Utils.imageUri.clear();
         Intent intent = new Intent(this, SelectImageAndMyVideoActivity.class);
-        intent.setFlags(67108864);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
     }
